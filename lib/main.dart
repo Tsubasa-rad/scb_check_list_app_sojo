@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:scb_check_list_app_sojo/auth_screen.dart';
 import 'package:scb_check_list_app_sojo/base.dart';
+import 'package:scb_check_list_app_sojo/database/auth_storage.dart';
 
 void main() {
   // WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +23,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Base(),
+      // home: Base(),
+      home: AuthScreen(),
     );
   }
 }

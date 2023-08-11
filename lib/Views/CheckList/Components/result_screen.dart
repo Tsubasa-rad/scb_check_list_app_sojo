@@ -12,12 +12,10 @@ import 'package:screenshot/screenshot.dart';
 class ResultScreen extends StatefulWidget {
   ResultScreen(
       {super.key,
-      required this.point,
       required this.title,
       required this.myAnswer,
       required this.dataList});
   final String title;
-  final int point;
   final List<Map<String, dynamic>> dataList;
 
   final List<List> myAnswer;
@@ -30,19 +28,19 @@ class _ResultScreenState extends State<ResultScreen> {
   final List<List> MySCBList = [];
   final DataStorage dataStorage = DataStorage();
   final List<Map<String, dynamic>> dataList;
+  int total = 0;
 
   _ResultScreenState(this.dataList);
 
   Future<void> onSaveButtonPressed() async {
     final String title = widget.title;
-    final int point = widget.point;
     final String dataCategory = "scbCheckList";
 
-    if (title.isNotEmpty && point > 0) {
+    if (title.isNotEmpty && total > 0) {
       final Map<String, dynamic> newData = {
         'id': UniqueKey().toString(),
         'title': title,
-        'point': point,
+        'point': total,
         'time': DateTime.now().toString(),
         'category': dataCategory,
         'list': widget.myAnswer,
@@ -52,6 +50,19 @@ class _ResultScreenState extends State<ResultScreen> {
 
       Navigator.popUntil(context, ModalRoute.withName('/'));
     }
+  }
+
+  calculateTotal(dataList) {
+    for (var i = 0; i < scbList.length; i++) {
+      total += scbList[i].selectedOption!.point;
+    }
+    return total;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    calculateTotal(dataList);
   }
 
   @override
@@ -128,7 +139,7 @@ class _ResultScreenState extends State<ResultScreen> {
           ),
         ],
         title: Text(
-          "合計得点${widget.point}",
+          "合計得点${total}",
           style: Styles.head,
         ),
       ),
@@ -145,7 +156,7 @@ class _ResultScreenState extends State<ResultScreen> {
               Padding(
                 padding: EdgeInsets.all(10),
                 child: SCBAnimatedCard(
-                  point: widget.point,
+                  point: total,
                   title: widget.title,
                   date: currentTime,
                 ),

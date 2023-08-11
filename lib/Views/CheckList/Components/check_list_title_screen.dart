@@ -40,7 +40,13 @@ class _CheckListTitleScreenState extends State<CheckListTitleScreen> {
             ],
           ),
           SizedBox(height: 20),
-          Text("タイトルを設定してください"),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Text(
+              "scbチェックリストで分析する対象となる活動のタイトルを設定してください",
+              style: Styles.cardText,
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(

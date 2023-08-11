@@ -47,9 +47,4 @@ final settingModel = [
     icon: Icon(Icons.room_preferences),
     bodyView: ReferencesScreen(),
   ),
-  // SettingModel(
-  //   title: "ログアウト",
-  //   icon: Icon(Icons.exit_to_app),
-  //   arrow: false,
-  // ),
 ];

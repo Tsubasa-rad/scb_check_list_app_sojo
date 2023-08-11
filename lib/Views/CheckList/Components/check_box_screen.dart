@@ -21,7 +21,6 @@ class CheckBoxScreen extends StatefulWidget {
 class _CheckBoxScreenState extends State<CheckBoxScreen> {
   late PageController _controller;
   int _questionNumber = 1;
-  int point = 0;
   bool _isLocked = false;
   List<List> myAnswer = [];
 
@@ -57,7 +56,6 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
                   ),
                 ]),
             const Divider(thickness: 1, color: Colors.grey),
-            Text("$point"),
             Expanded(
               child: PageView.builder(
                 itemCount: scbList.length,
@@ -105,7 +103,6 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
                 setState(() {
                   scb.isLocked = true;
                   scb.selectedOption = option;
-                  point = point + scb.selectedOption!.point;
                   myAnswer.add([
                     // scb.selectedOption,
                     _questionNumber,
@@ -122,8 +119,32 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
         Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                ButtonWidget(
+                  onTap: !scb.isLocked
+                      ? () {
+                          if (1 < _questionNumber) {
+                            setState(
+                              () {
+                                _questionNumber--;
+                                myAnswer.removeLast();
+                              },
+                            );
+                            _controller.previousPage(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeInExpo,
+                            );
+                          }
+                        }
+                      : () {},
+                  text: "戻る",
+                  icon: const Icon(
+                    Icons.back_hand_rounded,
+                    color: white,
+                  ),
+                  color: !scb.isLocked ? baseColor : baseOpacityColor,
+                ),
                 ButtonWidget(
                   onTap: () {
                     showModalBottomSheet(
@@ -157,7 +178,6 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
               onTap: scb.isLocked
                   ? () {
                       setState(() {
-                        point = point - scb.selectedOption!.point;
                         myAnswer.removeLast();
                         scb.isLocked = false;
                         _isLocked = false;
@@ -190,7 +210,6 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => ResultScreen(
-                              point: point,
                               title: widget.title,
                               myAnswer: myAnswer,
                               dataList: widget.dataList,
