@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scb_check_list_app_sojo/Models/scb_check_list_model.dart';
 import 'package:scb_check_list_app_sojo/Models/scb_text_model.dart';
-import 'package:scb_check_list_app_sojo/Models/text_models.dart';
 import 'package:scb_check_list_app_sojo/Views/ShareSetting/share_setting_screen.dart';
 import 'package:scb_check_list_app_sojo/Widgets/style.dart';
 
