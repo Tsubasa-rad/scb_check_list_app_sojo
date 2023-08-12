@@ -1,6 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:scb_check_list_app_sojo/Models/scb_check_list_model.dart';
+import 'package:scb_check_list_app_sojo/Models/scb_text_model.dart';
+import 'package:scb_check_list_app_sojo/Models/text_models.dart';
 import 'package:scb_check_list_app_sojo/Views/ShareSetting/share_setting_screen.dart';
 import 'package:scb_check_list_app_sojo/Widgets/style.dart';
 
@@ -20,6 +21,7 @@ class ShareCardAllQuestion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final category = widget.data[widget.cardIndex]['category'];
     return Container(
       width: width, // 正方形の幅を指定
       height: width, // 正方形の高さを指定
@@ -41,13 +43,14 @@ class ShareCardAllQuestion extends StatelessWidget {
           padding: EdgeInsets.all(8),
           child: GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4, // 列数を3に設定
+              crossAxisCount: category == 'scbCheckList' ? 4 : 2, // 列数を4に設定
               crossAxisSpacing: 3, // 列間のスペースを指定
               mainAxisSpacing: 3, // 行間のスペースを指定
-              childAspectRatio: 1.8, // 子要素のアスペクト比を設定
+              childAspectRatio:
+                  category == 'scbCheckList' ? 1.8 : 2, // 子要素のアスペクト比を設定
             ),
             physics: NeverScrollableScrollPhysics(), // スクロールを無効にする
-            itemCount: scbList.length,
+            itemCount: widget.data[widget.cardIndex]['list'].length,
             itemBuilder: (context, index) {
               final scb = scbList[index];
               return Container(
@@ -59,15 +62,17 @@ class ShareCardAllQuestion extends StatelessWidget {
                 child: Stack(
                   children: [
                     Text(
-                      scb.question,
+                      category == 'scbCheckList'
+                          ? scb.question
+                          : textScbList[index].question,
                       style: TextStyle(
-                        fontSize: 6,
+                        fontSize: category == 'scbCheckList' ? 6 : 10,
                         color: white,
                       ),
                     ),
                     Center(
                       child: Text(
-                        widget.dataList[index][1],
+                        widget.data[widget.cardIndex]['list'][index][1],
                         style: TextStyle(
                           fontSize: 10,
                           color: black,
@@ -83,4 +88,3 @@ class ShareCardAllQuestion extends StatelessWidget {
     );
   }
 }
-

@@ -29,6 +29,7 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
   bool _isLocked = false;
   List<List> myAnswer = [];
   TextEditingController _titleController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -102,70 +103,103 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
           ),
         ),
         Expanded(
-          child: !scb.text
-              ? QuestionsWidget(
-                  question: scb,
-                  onClickedOption: (option) {
-                    if (scb.isLocked) {
-                      return;
-                    } else {
-                      setState(() {
-                        scb.isLocked = true;
-                        scb.selectedOption = option;
-                        myAnswer.add([
-                          // scb.selectedOption,
-                          _questionNumber,
-                          scb.selectedOption!.option,
-                          scb.selectedOption!.point,
-                          "",
-                        ]);
-                      });
-                      _isLocked = scb.isLocked;
-                    }
-                  },
-                )
-              : Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Container(
-                    // decoration: Styles.addCardDecoration,
-                    padding: EdgeInsets.all(5),
-                    child: Column(
-                      children: [
-                        TextField(
-                          maxLines: 7,
-                          minLines: 7,
-                          maxLength: 300,
-                          controller: _titleController,
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: const BorderSide(
-                                color: Colors.green,
-                                width: 2.0,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                !scb.text
+                    ? QuestionsWidget(
+                        question: scb,
+                        onClickedOption: (option) {
+                          if (scb.isLocked) {
+                            return;
+                          } else {
+                            setState(() {
+                              scb.isLocked = true;
+                              scb.selectedOption = option;
+                              myAnswer.add([
+                                // scb.selectedOption,
+                                _questionNumber,
+                                scb.selectedOption!.option,
+                                scb.selectedOption!.point,
+                                "",
+                              ]);
+                            });
+                            _isLocked = scb.isLocked;
+                          }
+                        },
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Container(
+                          // decoration: Styles.addCardDecoration,
+                          padding: EdgeInsets.all(5),
+                          child: Column(
+                            children: [
+                              Stack(
+                                children: [
+                                  TextField(
+                                    maxLines: 7,
+                                    minLines: 7,
+                                    maxLength: 300,
+                                    controller: _titleController,
+                                    decoration: InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        borderSide: const BorderSide(
+                                          color: Colors.green,
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      labelStyle: TextStyle(
+                                        fontSize: 12,
+                                        // color: labelColor.withOpacity(0.3),/
+                                      ),
+                                      // hintText: myAnswer[][1],
+                                      // labelText: "入力をしてください",
+                                      floatingLabelStyle:
+                                          const TextStyle(fontSize: 12),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        borderSide: BorderSide(
+                                          // color: labelColor,
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 10, // ボタンの下側の余白
+                                    right: 0, // ボタンの右側の余白
+                                    child: IconButton(
+                                      onPressed: () {
+                                        FocusScope.of(context)
+                                            .requestFocus(FocusNode());
+                                      },
+                                      icon: Icon(
+                                        Icons.keyboard_arrow_down_rounded,
+                                        color: blue,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            labelStyle: TextStyle(
-                              fontSize: 12,
-                              // color: labelColor.withOpacity(0.3),/
-                            ),
-                            // hintText: myAnswer[][1],
-                            // labelText: "入力をしてください",
-                            floatingLabelStyle: const TextStyle(fontSize: 12),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                // color: labelColor,
-                                width: 1.0,
-                              ),
-                            ),
+                              Text("内容を入力して、保存ボタンを押してください"),
+                            ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text("内容を入力して、保存ボタンを押してください"),
-                        ),
-                        TextButton(
-                            onPressed: () {
+                      ),
+                const SizedBox(height: 50),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    scb.text
+                        ? ButtonWidget(
+                            text: "保存",
+                            icon: const Icon(
+                              Icons.save_alt_rounded,
+                              color: white,
+                            ),
+                            onTap: () {
                               if (scb.isLocked) {
                                 return;
                               } else {
@@ -182,133 +216,125 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
                                 _isLocked = scb.isLocked;
                               }
                             },
-                            child: Text("保存"))
-                      ],
-                    ),
-                  ),
-                ),
-        ),
-        Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ButtonWidget(
-                  onTap: !scb.isLocked
-                      ? () {
-                          if (1 < _questionNumber) {
-                            setState(
-                              () {
-                                _questionNumber--;
-                                myAnswer.removeLast();
-                              },
-                            );
-                            _controller.previousPage(
-                              duration: const Duration(milliseconds: 250),
-                              curve: Curves.easeInExpo,
-                            );
-                          }
-                        }
-                      : () {},
-                  text: "戻る",
-                  icon: const Icon(
-                    Icons.back_hand_rounded,
-                    color: white,
-                  ),
-                  color: !scb.isLocked ? baseColor : baseOpacityColor,
-                ),
-                ButtonWidget(
-                  onTap: () {
-                    showModalBottomSheet(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(30),
-                        ),
-                      ),
-                      context: context,
-                      builder: (BuildContext context) {
-                        return SCBCheckListDetailScreen(
-                            text: scb.detail, color: scb.color);
-                      },
-                    );
-                  },
-                  text: "詳細",
-                  icon: const Icon(
-                    Icons.info_outline,
-                    color: white,
-                  ),
-                  color: baseColor,
-                ),
-              ],
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ButtonWidget(
-              onTap: scb.isLocked
-                  ? () {
-                      setState(() {
-                        myAnswer.removeLast();
-                        scb.isLocked = false;
-                        _isLocked = false;
-                      });
-                    }
-                  : () {},
-              text: "リセット",
-              icon: const Icon(
-                Icons.restart_alt_rounded,
-                color: white,
-              ),
-              color: scb.isLocked ? baseColor : baseOpacityColor,
-            ),
-            ButtonWidget(
-              onTap: scb.isLocked
-                  ? () {
-                      if (_questionNumber < questionnaireLength) {
-                        _controller.nextPage(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInExpo,
-                        );
-                        setState(() {
-                          scb.isLocked = false;
-                          _questionNumber++;
-                          _isLocked = false;
-                        });
-
-                        _titleController.clear();
-                      } else {
-                        scb.isLocked = false;
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ResultScreen(
-                              title: widget.title,
-                              myAnswer: myAnswer,
-                              dataList: widget.dataList,
-                              selectedItem: widget.selectedItem,
+                          )
+                        : ButtonWidget(
+                            onTap: scb.isLocked
+                                ? () {
+                                    setState(() {
+                                      myAnswer.removeLast();
+                                      scb.isLocked = false;
+                                      _isLocked = false;
+                                    });
+                                  }
+                                : () {},
+                            text: "リセット",
+                            icon: const Icon(
+                              Icons.restart_alt_rounded,
+                              color: white,
+                            ),
+                            color: scb.isLocked ? baseColor : baseOpacityColor,
+                          ),
+                    ButtonWidget(
+                      onTap: () {
+                        showModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(30),
                             ),
                           ),
+                          context: context,
+                          builder: (BuildContext context) {
+                            return SCBCheckListDetailScreen(
+                                text: scb.detail, color: scb.color);
+                          },
                         );
-                      }
-                    }
-                  : () {},
-              text: _questionNumber < questionnaireLength ? "次へ" : "終了",
-              icon: _questionNumber < questionnaireLength
-                  ? const Icon(
-                      Icons.navigate_next_outlined,
-                      color: white,
-                    )
-                  : const Icon(
-                      Icons.check_circle_outline,
-                      color: white,
+                      },
+                      text: "詳細",
+                      icon: const Icon(
+                        Icons.info_outline,
+                        color: white,
+                      ),
+                      color: baseColor,
                     ),
-              color: scb.isLocked ? baseColor : baseOpacityColor,
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ButtonWidget(
+                      onTap: !scb.isLocked
+                          ? () {
+                              if (1 < _questionNumber) {
+                                setState(
+                                  () {
+                                    _questionNumber--;
+                                    myAnswer.removeLast();
+                                  },
+                                );
+                                _controller.previousPage(
+                                  duration: const Duration(milliseconds: 250),
+                                  curve: Curves.easeInExpo,
+                                );
+                              }
+                            }
+                          : () {},
+                      text: "戻る",
+                      icon: const Icon(
+                        Icons.navigate_before_outlined,
+                        color: white,
+                      ),
+                      color: !scb.isLocked ? baseColor : baseOpacityColor,
+                    ),
+                    ButtonWidget(
+                      onTap: scb.isLocked
+                          ? () {
+                              if (_questionNumber < questionnaireLength) {
+                                _controller.nextPage(
+                                  duration: const Duration(milliseconds: 250),
+                                  curve: Curves.easeInExpo,
+                                );
+                                setState(() {
+                                  scb.isLocked = false;
+                                  _questionNumber++;
+                                  _isLocked = false;
+                                });
+
+                                _titleController.clear();
+                              } else {
+                                scb.isLocked = false;
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ResultScreen(
+                                      title: widget.title,
+                                      myAnswer: myAnswer,
+                                      dataList: widget.dataList,
+                                      selectedItem: widget.selectedItem,
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          : () {},
+                      text: _questionNumber < questionnaireLength ? "次へ" : "終了",
+                      icon: _questionNumber < questionnaireLength
+                          ? const Icon(
+                              Icons.navigate_next_outlined,
+                              color: white,
+                            )
+                          : const Icon(
+                              Icons.check_circle_outline,
+                              color: white,
+                            ),
+                      color: scb.isLocked ? baseColor : baseOpacityColor,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5)
+              ],
             ),
-          ],
+          ),
         ),
-        const SizedBox(height: 5)
       ],
     );
   }
