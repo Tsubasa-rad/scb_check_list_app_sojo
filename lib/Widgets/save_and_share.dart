@@ -27,7 +27,6 @@ void shareCSVDataFile(String csvData, String text, String id) async {
     final File file = File(path);
   final encodedData = utf8.encode('\uFEFF' + csvData); // UTF-8 BOMを含むバイトデータを作成
   await file.writeAsBytes(encodedData);
-    print('CSVファイルを保存しました: $path');
   
   await Share.shareFiles([file.path], text: text);
 }

@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:scb_check_list_app_sojo/Models/scb_check_list_model.dart';
+import 'package:scb_check_list_app_sojo/Models/scb_text_model.dart';
 import 'package:scb_check_list_app_sojo/Views/CheckList/Widgets/check_box.dart';
 import 'package:scb_check_list_app_sojo/Views/CheckList/Widgets/scb_animated_card.dart';
 import 'package:scb_check_list_app_sojo/Views/ShareSetting/share_setting_screen.dart';
-// import 'package:scb_check_list_app_sojo/Widgets/button_widget.dart';
 import 'package:scb_check_list_app_sojo/Widgets/style.dart';
 
 class SCBCheckListData extends StatelessWidget {
@@ -34,6 +34,7 @@ class SCBCheckListData extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     DateTime date = DateTime.parse(dateTime);
+    final String itemData = data[cardIndex]['category'];
     return Scaffold(
       appBar: AppBar(
         foregroundColor: black,
@@ -53,7 +54,8 @@ class SCBCheckListData extends StatelessWidget {
                   date: date,
                   color: color,
                   grade: grade,
-                  data: data, cardIndex: cardIndex,
+                  data: data,
+                  cardIndex: cardIndex,
                 ),
                 fullscreenDialog: true,
               ),
@@ -83,16 +85,16 @@ class SCBCheckListData extends StatelessWidget {
                 ),
               ),
               ...List.generate(
-                scbList.length,
+                dataList.length,
                 (index) => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: CheckBox(
                     size: size,
-                    color: scbList[index].color,
+                    color: itemData == 'scbCheckList' ? scbList[index].color : textScbList[index].color,
                     point: dataList[index][2],
                     index: index,
-                    title: scbList[index].question,
-                    title2: scbList[index].question2,
+                    title: itemData == 'scbCheckList' ? scbList[index].question : textScbList[index].question,
+                    title2: itemData == 'scbCheckList' ? scbList[index].question2 : textScbList[index].question2,
                     answer: dataList[index]
                         [1], //scbList[index].selectedOption!.option,
                     data: data,

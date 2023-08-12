@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:scb_check_list_app_sojo/Models/scb_check_list_model.dart';
+import 'package:scb_check_list_app_sojo/Models/scb_text_model.dart';
 import 'package:scb_check_list_app_sojo/Views/CheckList/Widgets/check_box.dart';
 import 'package:scb_check_list_app_sojo/Views/CheckList/Widgets/scb_animated_card.dart';
 import 'package:scb_check_list_app_sojo/Widgets/button_widget.dart';
@@ -14,11 +15,13 @@ class ResultScreen extends StatefulWidget {
       {super.key,
       required this.title,
       required this.myAnswer,
-      required this.dataList});
+      required this.dataList,
+      required this.selectedItem});
   final String title;
   final List<Map<String, dynamic>> dataList;
 
   final List<List> myAnswer;
+  final String selectedItem;
 
   @override
   State<ResultScreen> createState() => _ResultScreenState(dataList);
@@ -34,7 +37,8 @@ class _ResultScreenState extends State<ResultScreen> {
 
   Future<void> onSaveButtonPressed() async {
     final String title = widget.title;
-    final String dataCategory = "scbCheckList";
+    final String dataCategory =
+        widget.selectedItem == "SCBチェックリスト" ? "scbCheckList" : "textScbList";
 
     if (title.isNotEmpty && total > 0) {
       final Map<String, dynamic> newData = {
@@ -53,8 +57,11 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   calculateTotal(dataList) {
-    for (var i = 0; i < scbList.length; i++) {
-      total += scbList[i].selectedOption!.point;
+    List questionnaireData =
+        widget.selectedItem == 'SCBチェックリスト' ? scbList : textScbList;
+    for (var i = 0; i < widget.myAnswer.length; i++) {
+      final int point = widget.myAnswer[i][2];
+      total += point;
     }
     return total;
   }
@@ -172,7 +179,7 @@ class _ResultScreenState extends State<ResultScreen> {
                           (index) => CheckBox(
                             size: size,
                             color: scbList[index].color,
-                            point: scbList[index].selectedOption!.point,
+                            point: widget.myAnswer[index][2],
                             index: index,
                             title: scbList[index].question,
                             title2: scbList[index].question2,

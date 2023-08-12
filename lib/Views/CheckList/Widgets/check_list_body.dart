@@ -55,9 +55,14 @@ class _CheckListBodyState extends State<CheckListBody> {
     }
   }
 
+  String selectedItem = 'すべて';
+  List<String> item = ['すべて','SCBチェックリスト', 'テキストアンケート']; // 初期選択項目
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final String dataCategory =
+        selectedItem == "SCBチェックリスト" ? "scbCheckList" : "textScbList";
     return RefreshIndicator(
       onRefresh: refreshDataList,
       child: ListView(
@@ -65,12 +70,65 @@ class _CheckListBodyState extends State<CheckListBody> {
           const SizedBox(height: 10),
           const DetailCard(),
           const SizedBox(height: 10),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: Container(
+              decoration: BoxDecoration(
+                color: white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  Styles.shadowCard,
+                ],
+              ),
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: Column(
+                children: [
+                  Text("カテゴリー選択"),
+                  SizedBox(height: 5),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Wrap(
+                      runSpacing: 5,
+                      spacing: 7,
+                      children: item.map((tag) {
+                        return InkWell(
+                          borderRadius: BorderRadius.all(Radius.circular(32)),
+                          onTap: () {
+                            setState(() {
+                              selectedItem = tag;
+                            });
+                          },
+                          child: AnimatedContainer(
+                              duration: Duration(microseconds: 200),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 5, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: tag == selectedItem ? baseColor : white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(32),
+                                ),
+                                border:
+                                    Border.all(width: 2, color: baseDarkColor),
+                              ),
+                              child: Text(tag)),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           dataList.length != 0
               ? Column(
                   children: [
                     ...List.generate(
                       dataList.length,
-                      (index) => cardDismissible(context, index, size),
+                      (index) => selectedItem != "すべて"
+                          ? dataList[index]['category'] == dataCategory
+                              ? cardDismissible(context, index, size)
+                              : SizedBox()
+                          : cardDismissible(context, index, size),
                     ),
                   ],
                 )

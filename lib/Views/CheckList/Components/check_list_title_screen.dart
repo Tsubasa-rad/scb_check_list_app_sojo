@@ -15,6 +15,8 @@ class CheckListTitleScreen extends StatefulWidget {
 
 class _CheckListTitleScreenState extends State<CheckListTitleScreen> {
   String _inputText = '';
+  String selectedItem = 'SCBチェックリスト';
+  List<String> item = ['SCBチェックリスト', 'テキストアンケート']; // 初期選択項目
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class _CheckListTitleScreenState extends State<CheckListTitleScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: Text(
-              "scbチェックリストで分析する対象となる活動のタイトルを設定してください",
+              "分析する対象となる活動のタイトルを設定してください",
               style: Styles.cardText,
             ),
           ),
@@ -63,6 +65,34 @@ class _CheckListTitleScreenState extends State<CheckListTitleScreen> {
               maxLength: 20,
             ),
           ),
+          Text("分析の種類の選択"),
+          Container(
+            child: Wrap(
+              runSpacing: 15,
+              spacing: 15,
+              children: item.map((tag) {
+                return InkWell(
+                  borderRadius: BorderRadius.all(Radius.circular(32)),
+                  onTap: () {
+                    setState(() {
+                      selectedItem = tag;
+                    });
+                  },
+                  child: AnimatedContainer(
+                      duration: Duration(microseconds: 200),
+                      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: tag == selectedItem ? baseColor : white,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(32),
+                        ),
+                        border: Border.all(width: 2, color: baseDarkColor),
+                      ),
+                      child: Text(tag)),
+                );
+              }).toList(),
+            ),
+          ),
           ElevatedButton(
               onPressed: () {
                 showAlertDialog(context, _inputText);
@@ -79,7 +109,9 @@ class _CheckListTitleScreenState extends State<CheckListTitleScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(text),
-          content: text != "" ? Text('このタイトルで保存されます') : Text("タイトルを設定してください"),
+          content: text != ""
+              ? Text('このタイトルで保存されます\n${selectedItem}でアンケートを開始しますか？')
+              : Text("タイトルを設定してください"),
           actions: [
             ButtonWidget(
               text: "閉じる",
@@ -108,6 +140,7 @@ class _CheckListTitleScreenState extends State<CheckListTitleScreen> {
                         builder: (context) => CheckBoxScreen(
                           title: _inputText,
                           dataList: widget.dataList,
+                          selectedItem: selectedItem,
                         ),
                         fullscreenDialog: true,
                       ),

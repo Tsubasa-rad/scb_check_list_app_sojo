@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:scb_check_list_app_sojo/Models/scb_check_list_model.dart';
+import 'package:scb_check_list_app_sojo/Models/scb_text_model.dart';
 import 'package:scb_check_list_app_sojo/Views/CheckList/Components/result_screen.dart';
 import 'package:scb_check_list_app_sojo/Views/CheckList/Components/scb_check_list_ditail_screen.dart';
 import 'package:scb_check_list_app_sojo/Views/CheckList/Widgets/question_widget.dart';
@@ -10,9 +11,13 @@ import 'package:scb_check_list_app_sojo/Widgets/style.dart';
 
 class CheckBoxScreen extends StatefulWidget {
   const CheckBoxScreen(
-      {super.key, required this.title, required this.dataList});
+      {super.key,
+      required this.title,
+      required this.dataList,
+      required this.selectedItem});
   final String title;
   final List<Map<String, dynamic>> dataList;
+  final String selectedItem;
 
   @override
   State<CheckBoxScreen> createState() => _CheckBoxScreenState();
@@ -23,6 +28,7 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
   int _questionNumber = 1;
   bool _isLocked = false;
   List<List> myAnswer = [];
+  TextEditingController _titleController = TextEditingController();
 
   @override
   void initState() {
@@ -32,6 +38,8 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List questionnaireData =
+        widget.selectedItem == 'SCBチェックリスト' ? scbList : textScbList;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -39,7 +47,7 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             const SizedBox(height: 50),
-            Text("Question $_questionNumber/${scbList.length}"),
+            Text("Question $_questionNumber/${questionnaireData.length}"),
 
             Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -51,19 +59,19 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
                       valueColor: new AlwaysStoppedAnimation<Color>(
                           Colors.lightBlueAccent),
                       minHeight: 10,
-                      value: _questionNumber / scbList.length,
+                      value: _questionNumber / questionnaireData.length,
                     ),
                   ),
                 ]),
             const Divider(thickness: 1, color: Colors.grey),
             Expanded(
               child: PageView.builder(
-                itemCount: scbList.length,
+                itemCount: questionnaireData.length,
                 controller: _controller,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  final _scbList = scbList[index];
-                  return buildQuestion(_scbList);
+                  final questionnaire = questionnaireData[index];
+                  return buildQuestion(questionnaire, questionnaireData.length);
                 },
               ),
             ),
@@ -74,7 +82,7 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
     );
   }
 
-  Column buildQuestion(SCBCheckList scb) {
+  Column buildQuestion(scb, int questionnaireLength) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -94,27 +102,91 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
           ),
         ),
         Expanded(
-          child: QuestionsWidget(
-            question: scb,
-            onClickedOption: (option) {
-              if (scb.isLocked) {
-                return;
-              } else {
-                setState(() {
-                  scb.isLocked = true;
-                  scb.selectedOption = option;
-                  myAnswer.add([
-                    // scb.selectedOption,
-                    _questionNumber,
-                    scb.selectedOption!.option,
-                    scb.selectedOption!.point,
-                    "",
-                  ]);
-                });
-                _isLocked = scb.isLocked;
-              }
-            },
-          ),
+          child: !scb.text
+              ? QuestionsWidget(
+                  question: scb,
+                  onClickedOption: (option) {
+                    if (scb.isLocked) {
+                      return;
+                    } else {
+                      setState(() {
+                        scb.isLocked = true;
+                        scb.selectedOption = option;
+                        myAnswer.add([
+                          // scb.selectedOption,
+                          _questionNumber,
+                          scb.selectedOption!.option,
+                          scb.selectedOption!.point,
+                          "",
+                        ]);
+                      });
+                      _isLocked = scb.isLocked;
+                    }
+                  },
+                )
+              : Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Container(
+                    // decoration: Styles.addCardDecoration,
+                    padding: EdgeInsets.all(5),
+                    child: Column(
+                      children: [
+                        TextField(
+                          maxLines: 7,
+                          minLines: 7,
+                          maxLength: 300,
+                          controller: _titleController,
+                          decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(
+                                color: Colors.green,
+                                width: 2.0,
+                              ),
+                            ),
+                            labelStyle: TextStyle(
+                              fontSize: 12,
+                              // color: labelColor.withOpacity(0.3),/
+                            ),
+                            // hintText: myAnswer[][1],
+                            // labelText: "入力をしてください",
+                            floatingLabelStyle: const TextStyle(fontSize: 12),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide(
+                                // color: labelColor,
+                                width: 1.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("内容を入力して、保存ボタンを押してください"),
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              if (scb.isLocked) {
+                                return;
+                              } else {
+                                setState(() {
+                                  scb.isLocked = true;
+                                  final point = 0;
+                                  myAnswer.add([
+                                    _questionNumber,
+                                    _titleController.text,
+                                    point,
+                                    "",
+                                  ]);
+                                });
+                                _isLocked = scb.isLocked;
+                              }
+                            },
+                            child: Text("保存"))
+                      ],
+                    ),
+                  ),
+                ),
         ),
         Column(
           children: [
@@ -194,7 +266,7 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
             ButtonWidget(
               onTap: scb.isLocked
                   ? () {
-                      if (_questionNumber < scbList.length) {
+                      if (_questionNumber < questionnaireLength) {
                         _controller.nextPage(
                           duration: const Duration(milliseconds: 250),
                           curve: Curves.easeInExpo,
@@ -204,6 +276,8 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
                           _questionNumber++;
                           _isLocked = false;
                         });
+
+                        _titleController.clear();
                       } else {
                         scb.isLocked = false;
                         Navigator.pushReplacement(
@@ -213,14 +287,15 @@ class _CheckBoxScreenState extends State<CheckBoxScreen> {
                               title: widget.title,
                               myAnswer: myAnswer,
                               dataList: widget.dataList,
+                              selectedItem: widget.selectedItem,
                             ),
                           ),
                         );
                       }
                     }
                   : () {},
-              text: _questionNumber < scbList.length ? "次へ" : "終了",
-              icon: _questionNumber < scbList.length
+              text: _questionNumber < questionnaireLength ? "次へ" : "終了",
+              icon: _questionNumber < questionnaireLength
                   ? const Icon(
                       Icons.navigate_next_outlined,
                       color: white,

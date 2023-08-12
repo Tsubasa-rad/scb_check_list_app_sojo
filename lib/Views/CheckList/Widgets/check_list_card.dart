@@ -43,7 +43,6 @@ class CheckListCard extends StatelessWidget {
     int indexOfSpace = dateTime.indexOf(' ');
     String date =
         indexOfSpace >= 0 ? dateTime.substring(0, indexOfSpace) : dateTime;
-
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: GestureDetector(
